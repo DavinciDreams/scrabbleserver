@@ -2,8 +2,18 @@ import { Express, Request, Response } from 'express';
 import { handleGameMove } from '../controllers/gameController';
 import { handleGameJoin } from '../controllers/gameController';
 import { PlayerJoinRequest, MoveRequest } from '../types';
-import { dictionary } from '../utils/dictionary';
+import { gameService } from '../services/index'
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+const dictionaryPath = join(__dirname, '../../data/dictionary.txt');
+const dictionary = new Set(
+  readFileSync(dictionaryPath, 'utf-8')
+    .split('\n')
+    .map(word => word.trim().toUpperCase())
+);
 import { pusher } from '../utils/pusher';
+import app from '../app';
 
 export const setRoutes = (app: Express): void => {
   // Game routes
@@ -70,3 +80,6 @@ export const setRoutes = (app: Express): void => {
     res.json({ isValid });
   });
 };
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+} );
