@@ -1,5 +1,65 @@
 // src/utils/index.ts
+import { prisma } from './prisma'
+import { GameData, PlayerData } from '../types/index'
 
+export async function checkGameExists(gameId: string): Promise<boolean> {
+  const game = await prisma.game.findUnique({
+    where: { id: gameId }
+  })
+  return !!game
+}
+
+export async function checkGameJoinable(gameId: string): Promise<{
+  joinable: boolean;
+  reason?: string;
+}> {
+  const game = await prisma.game.findUnique({
+    where: { id: gameId },
+    include: { players: true }
+  })
+
+  if (!game) {
+    return { joinable: false, reason: 'Game not found' }
+  }
+
+  if (game.status !== 'waiting') {
+    return { joinable: false, reason: 'Game has already started' }
+  }
+
+  if (game.players.length >= game.maxPlayers) {
+    return { joinable: false, reason: 'Game is full' }
+  }
+
+  return { joinable: true }
+}
+
+export async function addPlayerToGame(
+  gameId: string, 
+  playerName: string
+): Promise<PlayerData> {
+  const player = await prisma.player.create({
+    data: {
+      name: playerName,
+      game: { connect: { id: gameId } },
+      joinedAt: new Date()
+    }
+  })
+
+  // Update game status if max players reached
+  const game = await prisma.game.findUnique({
+    where: { id: gameId },
+    include: { players: true }
+  })
+
+  if (game && game.players.length >= game.maxPlayers) {
+    await prisma.game.update({
+      where: { id: gameId },
+      data: { status: 'playing' }
+    })
+  }
+
+  return player
+}
 interface ApiResponse<T> {
   status: 'success' | 'error';
   message: string;
