@@ -1,3 +1,24 @@
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export function middleware(request: NextRequest) {
+  const isAuthenticated = request.cookies.has('auth-token')
+  const isAuthPage = request.nextUrl.pathname === '/sign-in'
+
+  if (!isAuthenticated && !isAuthPage) {
+    return NextResponse.redirect(new URL('/sign-in', request.url))
+  }
+
+  if (isAuthenticated && isAuthPage) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/((?!api|_next/static|favicon.ico).*)']
+}
 import { Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
