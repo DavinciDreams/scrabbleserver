@@ -26,7 +26,7 @@ const pusher = new Pusher({
   cluster: process.env.PUSHER_CLUSTER!,
   useTLS: true
 });
-
+const port = process.env.PORT || 3001 
 // Create dictionary set
 const dictionaryPath = join(__dirname, '../data/dictionary.txt');
 const dictionary = new Set(
