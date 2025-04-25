@@ -32,7 +32,7 @@ const app = express();
 // Middleware
 // Move routes before other middleware
 app.use(cors({
-  origin: 'http://localhost:3000', // Your Next.js client URL
+  origin: 'https://scrabble-game-pi.vercel.app/', // Your Next.js client URL
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -41,7 +41,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Add logging middleware to debug requests
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
   next();
 });
 
