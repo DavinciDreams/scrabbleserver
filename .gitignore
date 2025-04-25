@@ -2,3 +2,14 @@
 /node_modules
 /package-lock.json
 /package.json
+*next.config.js
+/.next
+/.vercel
+/.vercelignore
+/.vercel_build_output
+/.vercel/project.json           
+*next
+/.DS_Store
+/.idea
+/.vscode
+*node_modules

@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 setRoutes(app);
 
 // Error handling middleware
-app.use(errorHandler);
+//app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 

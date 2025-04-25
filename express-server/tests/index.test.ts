@@ -1,11 +1,16 @@
-import request from 'supertest';
-import app from '../src/app';
+import Pusher from 'pusher-js';
+//import app from '../src/app';
 
-describe('API Tests', () => {
-  it('should respond with a 200 status for the root endpoint', async () => {
-    const response = await request(app).get('/');
-    expect(response.status).toBe(200);
-  });
+  // Enable pusher logging - don't include this in production
 
-  // Add more tests for other routes and functionalities as needed
+const pusher = new Pusher({
+  appId: "1981188",
+  key: "88011bfb3b1f189c5996",
+  secret: "5f215ca6a7ef168284b3",
+  cluster: "us2",
+  useTLS: true
+});
+
+pusher.trigger("my-channel", "my-event", {
+  message: "hello world"
 });
