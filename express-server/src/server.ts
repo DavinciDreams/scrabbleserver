@@ -48,7 +48,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.post('/api/games/join', async (req: express.Request<{}, {}, PlayerJoinRequest>, res) => {
+app.get('/api/games/join', async (req: express.Request<{}, {}, PlayerJoinRequest>, res) => {
   console.log('Join request received:', req.body);
   const { player } = req.body;
 
