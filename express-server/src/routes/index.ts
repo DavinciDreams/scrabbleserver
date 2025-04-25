@@ -1,12 +1,6 @@
-import { Router } from 'express';
-import { exampleController } from '../controllers/index';
+import { Express } from 'express';
+import { handleGameMove } from '../controllers/gameController';
 
-const router = Router();
-
-export const setRoutes = () => {
-  router.get('/example', exampleController);
-
-  // Add more routes here as needed
-
-  return router;
+export const setRoutes = (app: Express): void => {
+  app.post('/api/game/:gameId/move', handleGameMove);
 };

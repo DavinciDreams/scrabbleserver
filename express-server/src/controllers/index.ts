@@ -1,13 +1,45 @@
 // src/controllers/index.ts
 
-export const getExample = (req, res) => {
-    res.send("This is an example response from the controller.");
+import { Request, Response } from 'express';
+
+interface CreateExampleRequest {
+  // Define your request body type here
+  data: any;
+}
+
+export const getExample = (req: Request, res: Response): void => {
+  try {
+    res.status(200).json({
+      message: "This is an example response from the controller"
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Internal server error"
+    });
+  }
 };
 
-export const createExample = (req, res) => {
+export const createExample = (
+  req: Request<{}, {}, CreateExampleRequest>,
+  res: Response
+): void => {
+  try {
     const data = req.body;
-    // Logic to handle data creation
-    res.status(201).send({ message: "Data created successfully", data });
-};
+    
+    if (!data) {
+      return res.status(400).json({
+        error: "Request body is required"
+      });
+    }
 
-// Add more controller functions as needed
+    // Logic to handle data creation
+    res.status(201).json({
+      message: "Data created successfully",
+      data
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Internal server error"
+    });
+  }
+};
