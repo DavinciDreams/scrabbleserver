@@ -1,11 +1,19 @@
 import express from 'express';
+import {
+  securityMiddleware,
+  loggingMiddleware,
+  rateLimiter,
+  validateRequest,
+  authenticateGame,
+  errorHandler
+} from './middleware';
+
 import Pusher from 'pusher';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { setRoutes } from './routes/index';
-import { errorHandler } from './middleware/index';
 import { PlayerJoinRequest, MoveRequest } from './types';
 
 dotenv.config();
@@ -29,23 +37,17 @@ const dictionary = new Set(
 
 const app = express();
 
-// Middleware
-// Move routes before other middleware
-app.use(cors({
-  origin: 'https://scrabble-game-pi.vercel.app/', // Your Next.js client URL
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
+// Apply global middlewares
+app.use(securityMiddleware);
+app.use(loggingMiddleware);
+app.use(rateLimiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(validateRequest);
 
-// Add logging middleware to debug requests
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  console.log('Headers:', req.headers);
-  console.log('Body:', req.body);
-  next();
-});
+// Apply game routes with authentication
+app.use('/api/game/:gameId', authenticateGame);
+app.use('/api/games/join', validateRequest);
 
 // Routes
 app.get('/api/games/join', async (req: express.Request<{}, {}, PlayerJoinRequest>, res) => {
@@ -109,7 +111,7 @@ app.post('/api/game/:gameId/move', async (req: express.Request<{gameId: string},
 // Set up additional routes
 setRoutes(app);
 
-// Error handling middleware should be last
+// Error handling middleware (must be last)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
